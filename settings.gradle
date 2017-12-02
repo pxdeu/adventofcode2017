@@ -16,5 +16,6 @@ include 'services:webservice'
 */
 
 rootProject.name = 'adventofcode2017'
+include 'common'
 include 'day1'
 include 'day2'

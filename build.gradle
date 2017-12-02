@@ -22,3 +22,8 @@ subprojects {
     }
 }
 
+configure(subprojects.findAll { it.name != 'common' }) {
+    dependencies {
+        compile project(':common')
+    }
+}
