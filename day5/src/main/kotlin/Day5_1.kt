@@ -5,9 +5,7 @@ fun main(args: Array<String>) {
     var index = 0
     var count = 0
     while (index < jumps.size) {
-        val old = index
-        index += jumps[index]
-        jumps[old]++
+        index += jumps[index]++
         count += 1
     }
     println(count)
