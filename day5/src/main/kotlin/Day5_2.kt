@@ -7,7 +7,11 @@ fun main(args: Array<String>) {
     while (index < jumps.size) {
         val old = index
         index += jumps[index]
-        jumps[old]++
+        if (jumps[old] >= 3) {
+            jumps[old]--
+        } else {
+            jumps[old]++
+        }
         count += 1
     }
     println(count)
