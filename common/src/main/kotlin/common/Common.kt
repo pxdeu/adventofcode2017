@@ -13,3 +13,9 @@ fun readInput(resourceName: String = "input.txt"): Reader {
 
     throw FileNotFoundException("$resourceName does not exist")
 }
+
+fun <T> List<T>.append(list: List<T>): List<T> {
+    val out = this.toMutableList()
+    out.addAll(list)
+    return out
+}
