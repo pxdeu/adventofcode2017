@@ -9,7 +9,7 @@ fun main(args: Array<String>) {
 
     var position = 0
     var skip = 0
-    for (i in 0 until 64) {
+    repeat(64) {
         for (length in lengths) {
             val subList = reversedSubList(numbers, position, length)
             numbers = replaceSubList(numbers, position, subList)
@@ -21,16 +21,10 @@ fun main(args: Array<String>) {
 }
 
 fun dense(source: List<Int>, blockSize: Int = 16): List<Int> {
-    require(source.size % blockSize == 0)
-        { "Illegal list size '${source.size}' and block size '$blockSize'" }
+    require(source.size % blockSize == 0) { "Illegal list size '${source.size}' and block size '$blockSize'" }
 
-    val out = mutableListOf<Int>()
-
-    var i = 0
-    while (i < source.size) {
-        out.add(source.subList(i + 1, i + blockSize).fold(source[i], { acc, c -> acc.xor(c) }))
-        i += blockSize
+    return List(source.size / blockSize) {
+        val index = it * blockSize
+        source.subList(index + 1, index + blockSize).fold(source[index], { acc, i -> acc.xor(i) })
     }
-
-    return out
 }
