@@ -1,6 +1,7 @@
-package part1
+package part2
 
 import common.append
+import common.replace
 import common.replaceSubList
 import common.reversedSubList
 
@@ -8,14 +9,34 @@ fun main(args: Array<String>) {
 
     val input = "xlqgujun"
 
-    val used = (0 until 128)
-            .map { knotHash("$input-$it") }
-            .sumBy {
-                it.joinToString("") { it.toString(2).padStart(8, '0') }
-                        .filter { it == '1' }.length
+    val grid = (0 until 128)
+            .map {
+                knotHash("$input-$it").joinToString("") { it.toString(2).padStart(8, '0') }
+            }.toMutableList()
+
+    var count = 0
+    for (y in 0 until 128) {
+        for (x in 0 until 128) {
+            if (grid[y][x] == '1') {
+                walkRegion(grid, y, x)
+                count += 1
             }
-    println(used)
+        }
+        println(grid[y])
+    }
+    println(count)
 }
+
+fun walkRegion(grid: MutableList<String>, y: Int, x: Int) {
+    if (x in 0..127 && y in 0..127 && grid[y][x] == '1') {
+        grid[y] = grid[y].replace(x, 'x')
+        walkRegion(grid, y, x - 1)
+        walkRegion(grid, y, x + 1)
+        walkRegion(grid, y - 1, x)
+        walkRegion(grid, y + 1, x)
+    }
+}
+
 
 // Functions from day 10
 
