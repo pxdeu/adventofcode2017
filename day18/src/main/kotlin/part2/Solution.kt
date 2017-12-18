@@ -6,10 +6,10 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 
 /**
- * Did this one on a train with no internet and couldn't learn about kotlin concurrency in time.
+ * I did this one on a train with no internet and couldn't learn about kotlin concurrency in time.
  * I went with a "Java-Workaround" instead.
- * This solution is not thread-safe, for example one program can deadlock when the other terminates normally.
- * It's just thread-safe enough for the puzzle.
+ * This solution is not thread-safe. For example one program can deadlock when the other terminates normally.
+ * It's just thread-safe enough for the puzzle input.
  */
 fun main(args: Array<String>) {
 
@@ -28,7 +28,7 @@ fun main(args: Array<String>) {
 
 class Context {
 
-    val queues = listOf(LinkedBlockingQueue<Long>(), LinkedBlockingQueue<Long>())
+    val queues = listOf(LinkedBlockingQueue<Long>(), LinkedBlockingQueue())
     private var blocked = mutableListOf(false, false)
 
     @Synchronized fun setBlock(id: Int, block: Boolean): Boolean {
@@ -49,7 +49,7 @@ class Program(private val id: Int, private val lines: List<String>, private val 
 
     override fun run() {
         var pointer = 0L
-        var jumped = false
+        var jumped: Boolean
         loop@ while (true) {
             if (pointer < 0 || pointer > lines.size - 1) {
                 println("Program '$id' ended: $pointer")
@@ -69,7 +69,7 @@ class Program(private val id: Int, private val lines: List<String>, private val 
                 "rcv" -> {
                     var value: Long? = null
                     while (value == null) {
-                        value = context.queues[id].poll(5, TimeUnit.SECONDS)
+                        value = context.queues[id].poll(1, TimeUnit.SECONDS)
                         if (!context.setBlock(id, true)) {
                             println("Deadlock detected in p '$id'")
                             break@loop
