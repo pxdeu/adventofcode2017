@@ -3,7 +3,6 @@ package part2
 import common.append
 import common.readInput
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
 
 /**
  * I did this one on a train with no internet and couldn't learn about kotlin concurrency in time.
@@ -13,7 +12,7 @@ import java.util.concurrent.TimeUnit
  */
 fun main(args: Array<String>) {
 
-    val lines = readInput().readLines() //input.reader().readLines()
+    val lines = readInput().readLines()
 
     val context = Context()
     val p0 = Program(0, lines, context)
@@ -31,7 +30,8 @@ class Context {
     val queues = listOf(LinkedBlockingQueue<Long>(), LinkedBlockingQueue())
     private var blocked = mutableListOf(false, false)
 
-    @Synchronized fun setBlock(id: Int, block: Boolean): Boolean {
+    @Synchronized
+    fun setBlock(id: Int, block: Boolean): Boolean {
         blocked[id] = block
         if (blocked.all { it } && queues.all { it.isEmpty() }) {
             return false
@@ -50,11 +50,7 @@ class Program(private val id: Int, private val lines: List<String>, private val 
     override fun run() {
         var pointer = 0L
         var jumped: Boolean
-        loop@ while (true) {
-            if (pointer < 0 || pointer > lines.size - 1) {
-                println("Program '$id' ended: $pointer")
-                break
-            }
+        loop@ while (pointer in 0 until lines.size) {
             jumped = false
             val (operation, register, argument) = lines[pointer.toInt()].split(" ").append("#")
             when (operation.trim()) {
@@ -69,14 +65,14 @@ class Program(private val id: Int, private val lines: List<String>, private val 
                 "rcv" -> {
                     var value: Long? = null
                     while (value == null) {
-                        value = context.queues[id].poll(1, TimeUnit.SECONDS)
-                        if (!context.setBlock(id, true)) {
-                            println("Deadlock detected in p '$id'")
+                        value = context.queues[id].poll()
+                        if (value == null && !context.setBlock(id, true)) {
+                            println("Deadlock detected in program '$id'")
                             break@loop
                         }
                     }
-                    registers[register] = value
                     context.setBlock(id, false)
+                    registers[register] = value
                 }
                 "jgz" -> if (resolve(register) > 0) {
                     pointer += resolve(argument)
